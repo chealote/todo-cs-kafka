@@ -10,3 +10,13 @@ sudo docker exec -ti kafka-broker bash
 ```
 
 Then run the app with `dotnet run` and visit http://localhost:5074/swagger/index.html or whatever the port is for you.
+
+## Usage
+
+There are three endpoints, one to get todos, another to create, and another to
+subscribe the API to kafka and create those todos in DB.
+
+First, create a todo by making a `POST /` in the swagger, then check the `GET
+/` to list todos, should be empty; after you run the request to `GET
+/subscribe`, the app starts listening for kafka items and creates a new todo
+for each new item that it receives.
