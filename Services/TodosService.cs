@@ -26,4 +26,31 @@ public class TodosService : ITodosService
         Console.WriteLine("CreateTodos()");
         _todosRepository.Create(todo);
     }
+
+    public bool UpdateTodo(Todo todo)
+    {
+        Console.WriteLine("UpdateTodos()");
+        var ok = _todosRepository.Delete(todo.Id);
+        if (!ok)
+            return false;
+        _todosRepository.Create(todo);
+        return true;
+    }
+
+    public bool DeleteTodo(int id)
+    {
+        Console.WriteLine("DeleteTodos()");
+        return _todosRepository.Delete(id);
+    }
+
+    public bool CompleteTodo(int id)
+    {
+        Console.WriteLine("PatchTodos()");
+        var todo = _todosRepository.Get(id);
+        if (todo == null)
+            return false;
+        todo.IsComplete = true;
+        _todosRepository.Patch(todo);
+        return true;
+    }
 }

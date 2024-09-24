@@ -28,17 +28,32 @@ public class TodosController : ControllerBase
     public void Subscribe()
     {
         _kafkaService.Subscribe((string jsonTodo) => {
-            var todo = JsonSerializer.Deserialize<Todo>(jsonTodo);
-            if (todo == null) {
+            var todoRequest = JsonSerializer.Deserialize<TodoRequest>(jsonTodo);
+            if (todoRequest == null) {
                 Console.WriteLine($"Got null todo from kafka");
                 return;
             }
-            _todosService.CreateTodo(todo);
+            var todo = Mappers.TodoMapper(todoRequest);
+            Console.WriteLine($"Got action from todo {todoRequest.Action}");
+            switch (todoRequest.Action) {
+            case EAction.Create:
+                _todosService.CreateTodo(todo);
+                break;
+            case EAction.Update:
+                _todosService.UpdateTodo(todo);
+                break;
+            case EAction.Delete:
+                _todosService.DeleteTodo(todo.Id);
+                break;
+            case EAction.Patch:
+                _todosService.CompleteTodo(todo.Id);
+                break;
+            }
         });
     }
 
     [HttpPost("")]
-    public IActionResult CreateTodo(Todo todo)
+    public IActionResult CreateTodo(TodoRequest todo)
     {
         try
         {
