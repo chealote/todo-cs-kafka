@@ -2,6 +2,7 @@ using TodoApi.Services.Interfaces;
 using TodoApi.Services;
 using TodoApi.Repositories.Interfaces;
 using TodoApi.Repositories;
+using TodoApi.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +19,10 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddControllers();
 
-builder.Services.AddTransient<ITodosService, TodosService>();
-builder.Services.AddSingleton<ITodosRepository, TodosRepository>();
-builder.Services.AddSingleton<IKafkaService, KafkaService>();
+builder.Services.AddScoped<ITodosRepository, TodosRepository>();
+builder.Services.AddScoped<ITodosService, TodosService>();
+builder.Services.AddScoped<IKafkaService, KafkaService>();
+builder.Services.AddDbContext<TodoContext>();
 
 var app = builder.Build();
 app.UseDeveloperExceptionPage();

@@ -36,16 +36,16 @@ public class TodosController : ControllerBase
             var todo = Mappers.TodoMapper(todoRequest);
             Console.WriteLine($"Got action from todo {todoRequest.Action}");
             switch (todoRequest.Action) {
-            case EAction.Create:
+            case ActionEnum.Create:
                 _todosService.CreateTodo(todo);
                 break;
-            case EAction.Update:
+            case ActionEnum.Update:
                 _todosService.UpdateTodo(todo);
                 break;
-            case EAction.Delete:
+            case ActionEnum.Delete:
                 _todosService.DeleteTodo(todo.Id);
                 break;
-            case EAction.Patch:
+            case ActionEnum.Patch:
                 _todosService.CompleteTodo(todo.Id);
                 break;
             }

@@ -1,4 +1,4 @@
-public enum EAction {
+public enum ActionEnum {
     Create,
     Update,
     Patch,
@@ -10,5 +10,5 @@ public class TodoRequest : IModelRequest
     public int? Id { get; set; }
     public string? Name { get; set; }
     public bool IsComplete { get; set; }
-    public EAction Action { get; set; }
+    public ActionEnum Action { get; set; }
 }

@@ -1,57 +1,53 @@
 using TodoApi.Repositories.Interfaces;
 using TodoApi.Models;
-using System.Reflection;
+using TodoApi.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace TodoApi.Repositories;
 
 public class TodosRepository : ITodosRepository
 {
-    private List<Todo> _todos;
+    private readonly TodoContext _context;
 
-    public TodosRepository()
+    public TodosRepository(TodoContext context)
     {
-        Console.WriteLine("Constructor()");
-        _todos = new List<Todo>();
+        _context = context;
     }
 
     public List<Todo> Get()
     {
-        return _todos;
+        return _context.Todos.ToList();
     }
 
     public Todo? Get(int id)
     {
-        var todo = _todos.FirstOrDefault(t => t.Id == id);
-        return todo;
+        return _context.Todos.Find(id);
     }
 
     public void Create(Todo todo)
     {
-        Console.WriteLine($"Create(): id={todo.Id}");
-        var existing = _todos.FirstOrDefault(t => t.Id == todo.Id);
-        if (existing != null) {
-            var maxId = _todos.Max(t => t.Id);
-            todo.Id = maxId + 1;
-        }
-        _todos.Add(todo);
+        _context.Todos.Add(todo);
+        _context.SaveChanges();
     }
 
     public bool Delete(int id)
     {
-        var existing = _todos.FirstOrDefault(t => t.Id == id);
-        if (existing == null)
+        var todo = _context.Todos.Find(id);
+        if (todo == null)
             return false;
-        _todos.Remove(existing);
+
+        _context.Todos.Remove(todo);
+        _context.SaveChanges();
         return true;
     }
 
     public void Patch(Todo todo)
     {
-        var existing = _todos.FirstOrDefault(t => t.Id == todo.Id);
-        foreach (PropertyInfo property in typeof(Todo).GetProperties())
-        {
-            object? value = property.GetValue(todo);
-            property.SetValue(existing, value);
-        }
+        var existing = _context.Todos.Find(todo.Id);
+        if (existing == null)
+            return;
+
+        _context.Entry(existing).CurrentValues.SetValues(todo);
+        _context.SaveChanges();
     }
 }
