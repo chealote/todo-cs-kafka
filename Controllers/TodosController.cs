@@ -27,32 +27,41 @@ public class TodosController : ControllerBase
     // TODO subscribe should stop at some point, after doing some
     // operations?
     [HttpGet("subscribe")]
-    public void Subscribe()
+    public void Subscribe([FromServices] IServiceScopeFactory serviceScopeFactory)
     {
-        _kafkaService.Subscribe((string jsonTodo) =>
+        _ = Task.Run(async () =>
         {
-            var todoRequest = JsonSerializer.Deserialize<TodoRequest>(jsonTodo);
-            if (todoRequest == null)
+            await using (var scope = serviceScopeFactory.CreateAsyncScope())
             {
-                Console.WriteLine($"Got null todo from kafka");
-                return;
-            }
-            var todo = Mappers.TodoMapper(todoRequest);
-            Console.WriteLine($"Got action from todo {todoRequest.Action}");
-            switch (todoRequest.Action)
+                var kafkaContext = scope.ServiceProvider.GetRequiredService<IKafkaService>();
+                var todosContext = scope.ServiceProvider.GetRequiredService<ITodosService>();
+
+                kafkaContext.Subscribe((string jsonTodo) =>
             {
-                case ActionEnum.Create:
-                    _todosService.CreateTodo(todo);
-                    break;
-                case ActionEnum.Update:
-                    _todosService.UpdateTodo(todo);
-                    break;
-                case ActionEnum.Delete:
-                    _todosService.DeleteTodo(todo.Id);
-                    break;
-                case ActionEnum.Patch:
-                    _todosService.CompleteTodo(todo.Id);
-                    break;
+                var todoRequest = JsonSerializer.Deserialize<TodoRequest>(jsonTodo);
+                if (todoRequest == null)
+                {
+                    Console.WriteLine($"Got null todo from kafka");
+                    return;
+                }
+                var todo = Mappers.TodoMapper(todoRequest);
+                Console.WriteLine($"Got action from todo {todoRequest.Action}");
+                switch (todoRequest.Action)
+                {
+                    case ActionEnum.Create:
+                        todosContext.CreateTodo(todo);
+                        break;
+                    case ActionEnum.Update:
+                        todosContext.UpdateTodo(todo);
+                        break;
+                    case ActionEnum.Delete:
+                        todosContext.DeleteTodo(todo.Id);
+                        break;
+                    case ActionEnum.Patch:
+                        todosContext.CompleteTodo(todo.Id);
+                        break;
+                }
+            });
             }
         });
     }
