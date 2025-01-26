@@ -1,4 +1,5 @@
-public enum ActionEnum {
+public enum ActionEnum
+{
     Create,
     Update,
     Patch,

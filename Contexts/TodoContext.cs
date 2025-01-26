@@ -3,27 +3,27 @@ using TodoApi.Models;
 
 namespace TodoApi.Contexts
 {
-  public class TodoContext : DbContext
-  {
-    protected readonly IConfiguration _config;
-
-    public TodoContext(IConfiguration config)
+    public class TodoContext : DbContext
     {
-      _config = config;
-    }
+        protected readonly IConfiguration _config;
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-    {
-      if (_config.GetValue<bool>("UseInMemoryDatabase"))
-      {
-        options.UseInMemoryDatabase("DB");
-      }
-      else
-      {
-        options.UseSqlite(_config.GetConnectionString("SqliteFilepath"));
-      }
-    }
+        public TodoContext(IConfiguration config)
+        {
+            _config = config;
+        }
 
-    public DbSet<Todo> Todos { get; set; }
-  }
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            if (_config.GetValue<bool>("UseInMemoryDatabase"))
+            {
+                options.UseInMemoryDatabase("DB");
+            }
+            else
+            {
+                options.UseSqlite(_config.GetConnectionString("SqliteFilepath"));
+            }
+        }
+
+        public DbSet<Todo> Todos { get; set; }
+    }
 }

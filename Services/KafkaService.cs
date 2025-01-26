@@ -15,10 +15,11 @@ public class KafkaService : IKafkaService
     public KafkaService()
     {
         _topicName = "kafka-topic";
-        _conf = new ConsumerConfig {
+        _conf = new ConsumerConfig
+        {
             GroupId = "kafka-consumer-group",
-                    BootstrapServers = "localhost:9092",
-                    AutoOffsetReset = AutoOffsetReset.Earliest,
+            BootstrapServers = "localhost:9092",
+            AutoOffsetReset = AutoOffsetReset.Earliest,
         };
     }
 
@@ -29,7 +30,8 @@ public class KafkaService : IKafkaService
             c.Subscribe(_topicName);
 
             CancellationTokenSource cts = new CancellationTokenSource();
-            Console.CancelKeyPress += (_, e) => {
+            Console.CancelKeyPress += (_, e) =>
+            {
                 e.Cancel = true;
                 cts.Cancel();
             };
@@ -64,7 +66,7 @@ public class KafkaService : IKafkaService
         {
             try
             {
-                var dr = await p.ProduceAsync(_topicName, new Message<Null, string> { Value = message});
+                var dr = await p.ProduceAsync(_topicName, new Message<Null, string> { Value = message });
                 Console.WriteLine($"Delivered '{dr.Value}' to '{dr.TopicPartitionOffset}'");
             }
             catch (ProduceException<Null, string> e)

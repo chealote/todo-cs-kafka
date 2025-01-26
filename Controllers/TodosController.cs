@@ -29,27 +29,30 @@ public class TodosController : ControllerBase
     [HttpGet("subscribe")]
     public void Subscribe()
     {
-        _kafkaService.Subscribe((string jsonTodo) => {
+        _kafkaService.Subscribe((string jsonTodo) =>
+        {
             var todoRequest = JsonSerializer.Deserialize<TodoRequest>(jsonTodo);
-            if (todoRequest == null) {
+            if (todoRequest == null)
+            {
                 Console.WriteLine($"Got null todo from kafka");
                 return;
             }
             var todo = Mappers.TodoMapper(todoRequest);
             Console.WriteLine($"Got action from todo {todoRequest.Action}");
-            switch (todoRequest.Action) {
-            case ActionEnum.Create:
-                _todosService.CreateTodo(todo);
-                break;
-            case ActionEnum.Update:
-                _todosService.UpdateTodo(todo);
-                break;
-            case ActionEnum.Delete:
-                _todosService.DeleteTodo(todo.Id);
-                break;
-            case ActionEnum.Patch:
-                _todosService.CompleteTodo(todo.Id);
-                break;
+            switch (todoRequest.Action)
+            {
+                case ActionEnum.Create:
+                    _todosService.CreateTodo(todo);
+                    break;
+                case ActionEnum.Update:
+                    _todosService.UpdateTodo(todo);
+                    break;
+                case ActionEnum.Delete:
+                    _todosService.DeleteTodo(todo.Id);
+                    break;
+                case ActionEnum.Patch:
+                    _todosService.CompleteTodo(todo.Id);
+                    break;
             }
         });
     }
@@ -64,7 +67,7 @@ public class TodosController : ControllerBase
             _kafkaService.Produce(JsonSerializer.Serialize(todo));
             return Accepted();
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine($"Error CreateTodo(): {e}");
             return StatusCode(500);

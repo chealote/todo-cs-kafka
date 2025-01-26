@@ -7,8 +7,9 @@ public static class Mappers
         // cast (int) of null maybe already maps to 0
         if (request.Id == null)
             request.Id = 0;
-        return new Todo {
-            Id = (int) request.Id,
+        return new Todo
+        {
+            Id = (int)request.Id,
             Name = request.Name,
             IsComplete = request.IsComplete,
         };
