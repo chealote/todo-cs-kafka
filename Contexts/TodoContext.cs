@@ -14,7 +14,14 @@ namespace TodoApi.Contexts
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-      options.UseInMemoryDatabase("DB");
+      if (_config.GetValue<bool>("UseInMemoryDatabase"))
+      {
+        options.UseInMemoryDatabase("DB");
+      }
+      else
+      {
+        options.UseSqlite(_config.GetConnectionString("SqliteFilepath"));
+      }
     }
 
     public DbSet<Todo> Todos { get; set; }

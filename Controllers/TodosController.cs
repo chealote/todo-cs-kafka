@@ -24,6 +24,8 @@ public class TodosController : ControllerBase
         return _todosService.GetTodos();
     }
 
+    // TODO subscribe should stop at some point, after doing some
+    // operations?
     [HttpGet("subscribe")]
     public void Subscribe()
     {
@@ -52,6 +54,8 @@ public class TodosController : ControllerBase
         });
     }
 
+    // TODO shouldn't allow Id to be set when creating a Todo, that's
+    // for the Db to do
     [HttpPost("")]
     public IActionResult CreateTodo(TodoRequest todo)
     {
